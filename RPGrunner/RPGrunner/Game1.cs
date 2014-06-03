@@ -19,6 +19,12 @@ namespace RPGrunner
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        SpriteAnimation animation;
+
+        Texture2D spriteSheet;
+
+        Vector2 location;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -33,7 +39,7 @@ namespace RPGrunner
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            location = new Vector2(100, 100);
 
             base.Initialize();
         }
@@ -47,7 +53,8 @@ namespace RPGrunner
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            spriteSheet = Content.Load<Texture2D>("AnimationTest");
+            animation = new SpriteAnimation(3, spriteSheet, 3, location);
         }
 
         /// <summary>
@@ -70,7 +77,7 @@ namespace RPGrunner
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            // TODO: Add your update logic here
+            animation.Update(gameTime, true, location);
 
             base.Update(gameTime);
         }
@@ -83,7 +90,11 @@ namespace RPGrunner
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            spriteBatch.Begin();
+
+            animation.Draw(spriteBatch);
+
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
