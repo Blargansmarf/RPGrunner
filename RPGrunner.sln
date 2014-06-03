@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RPGrunner", "RPGrunner\RPGrunner\RPGrunner.csproj", "{83F9F437-ADF7-47BA-BE4B-90D77DC96C7B}"
+EndProject
+Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "RPGrunnerContent", "RPGrunner\RPGrunnerContent\RPGrunnerContent.contentproj", "{E03C12B4-CED5-4A82-8230-04462967B2E2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{83F9F437-ADF7-47BA-BE4B-90D77DC96C7B}.Debug|x86.ActiveCfg = Debug|x86
+		{83F9F437-ADF7-47BA-BE4B-90D77DC96C7B}.Debug|x86.Build.0 = Debug|x86
+		{83F9F437-ADF7-47BA-BE4B-90D77DC96C7B}.Release|x86.ActiveCfg = Release|x86
+		{83F9F437-ADF7-47BA-BE4B-90D77DC96C7B}.Release|x86.Build.0 = Release|x86
+		{E03C12B4-CED5-4A82-8230-04462967B2E2}.Debug|x86.ActiveCfg = Debug|x86
+		{E03C12B4-CED5-4A82-8230-04462967B2E2}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
