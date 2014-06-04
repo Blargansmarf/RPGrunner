@@ -27,6 +27,9 @@ namespace RPGrunner
 
         List<Enemy> enemies;
 
+        bool battle;
+        int currentEnemy;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -45,6 +48,8 @@ namespace RPGrunner
         {
             screenHeight = graphics.GraphicsDevice.Viewport.Height;
             screenWidth = graphics.GraphicsDevice.Viewport.Width;
+
+            battle = false;
 
             translation = new Vector3();
 
@@ -94,13 +99,36 @@ namespace RPGrunner
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            translation.X += player.currentSpeed;
-
-            player.Update(gameTime);
-            foreach (Enemy enemy in enemies)
+            if (!battle)
             {
-                enemy.Update(gameTime);
+                translation.X += player.currentSpeed;
+
+                player.Update(gameTime);
+                foreach (Enemy enemy in enemies)
+                {
+                    enemy.Update(gameTime);
+                    if (Math.Abs(player.loc.X + player.playerDimensions.X - enemy.loc.X) <= 5
+                        && enemy.depth == player.currentDepth)
+                    {
+                        battle = true;
+                        currentEnemy = enemies.IndexOf(enemy);
+                    }
+                }
             }
+            else
+            {
+                enemies[currentEnemy].secondaryStats.health -= player.secondaryStats.attack;
+                player.secondaryStats.health -= enemies[currentEnemy].secondaryStats.attack;
+
+                player.BattleUpdate(gameTime);
+
+                if (enemies[currentEnemy].secondaryStats.health <= 0)
+                {
+                    enemies.RemoveAt(currentEnemy);
+                    battle = false;
+                }
+            }
+
 
             base.Update(gameTime);
         }

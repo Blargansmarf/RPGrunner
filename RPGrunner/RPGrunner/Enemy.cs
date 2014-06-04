@@ -13,10 +13,24 @@ namespace RPGrunner
 {
     class Enemy
     {
-        Vector2 loc;
+        public Vector2 loc;
         Texture2D spriteSheet;
         List <SpriteAnimation> animations;
-        int depth;
+        public int depth;
+
+        public struct PStats
+        {
+            public int strength, vitality, intelligence, dexterity;
+        }
+
+        public struct SStats
+        {
+            public int attack, defense, health, magic, maxHealth, maxMana;
+            public float resistance, dodge, criticalChance, criticalBonus;
+        }
+
+        public PStats primaryStats;
+        public SStats secondaryStats;
 
         GraphicsDeviceManager graphics;
         ContentManager content;
@@ -29,6 +43,13 @@ namespace RPGrunner
 
         public void Initialize(Vector2 position, Vector2 dim, int dept)
         {
+            primaryStats = new PStats();
+            secondaryStats = new SStats();
+
+            secondaryStats.maxHealth = 100;
+            secondaryStats.health = 100;
+            secondaryStats.attack = 3;
+
             animations = new List<SpriteAnimation>();
             loc = position;
             depth = dept;
@@ -50,6 +71,16 @@ namespace RPGrunner
             {
                 anim.Update(gameTime, loc);
             }
+        }
+
+        public void BattleUpdate(GameTime gameTime)
+        {
+            missingHealthBar.Width = (int)((playerDimensions.X * 3) /
+                (secondaryStats.maxHealth - (secondaryStats.maxHealth - secondaryStats.health))
+                * (playerDimensions.X * 3));
+            currentHealthBar.Width = (int)playerDimensions.X * 3 - missingHealthBar.Width;
+
+            missingHealthBar.X = currentHealthBar.Right;
         }
 
         public void Draw(SpriteBatch spriteBatch)
