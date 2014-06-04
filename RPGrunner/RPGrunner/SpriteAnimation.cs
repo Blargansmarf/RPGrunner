@@ -31,7 +31,7 @@ namespace RPGrunner
             lastFrameTime = new GameTime();
         }
 
-        public void Update(GameTime currentGameTime, bool anim, Vector2 dest)
+        public void Update(GameTime currentGameTime, Vector2 dest)
         {
             if (currentGameTime.TotalGameTime.TotalSeconds -
                 lastFrameTime.TotalGameTime.TotalSeconds >= totalTime / cells)
@@ -45,6 +45,13 @@ namespace RPGrunner
             source.X = source.Width * currentCell;
 
             destination = dest;
+        }
+
+        public void Reset()
+        {
+            source = new Rectangle(0, 0, texture.Width / cells, texture.Height);
+            currentCell = 0;
+            lastFrameTime = new GameTime();
         }
 
         public void Draw(SpriteBatch spriteBatch)

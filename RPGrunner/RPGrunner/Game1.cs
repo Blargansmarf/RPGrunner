@@ -19,16 +19,20 @@ namespace RPGrunner
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        SpriteAnimation animation;
+        public static float screenWidth, screenHeight;
 
-        Texture2D spriteSheet;
+        Vector3 translation;
 
-        Vector2 location;
+        Player player;
+
+        List<Enemy> enemies;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            //graphics.IsFullScreen = true;
         }
 
         /// <summary>
@@ -39,7 +43,27 @@ namespace RPGrunner
         /// </summary>
         protected override void Initialize()
         {
-            location = new Vector2(100, 100);
+            screenHeight = graphics.GraphicsDevice.Viewport.Height;
+            screenWidth = graphics.GraphicsDevice.Viewport.Width;
+
+            translation = new Vector3();
+
+            player = new Player(graphics, Content);
+            enemies = new List<Enemy>();
+            Enemy tempEnemy = new Enemy(graphics, Content);
+            tempEnemy.Initialize(new Vector2(500, (float)(Game1.screenHeight / 1.33)), new Vector2(10, 10), 0);
+            tempEnemy.AddAnimation("AnimationTest", 3, 1.5);
+            enemies.Add(tempEnemy);
+
+            tempEnemy = new Enemy(graphics, Content);
+            tempEnemy.Initialize(new Vector2(750, (float)(Game1.screenHeight / 1.33)), new Vector2(10, 10), -1);
+            tempEnemy.AddAnimation("AnimationTest", 3, 2);
+            enemies.Add(tempEnemy);
+
+            tempEnemy = new Enemy(graphics, Content);
+            tempEnemy.Initialize(new Vector2(1000, (float)(Game1.screenHeight / 1.33)), new Vector2(10, 10), 1);
+            tempEnemy.AddAnimation("AnimationTest", 3, .5);
+            enemies.Add(tempEnemy);
 
             base.Initialize();
         }
@@ -52,9 +76,6 @@ namespace RPGrunner
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            spriteSheet = Content.Load<Texture2D>("AnimationTest");
-            animation = new SpriteAnimation(3, spriteSheet, 3, location);
         }
 
         /// <summary>
@@ -73,11 +94,13 @@ namespace RPGrunner
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
+            translation.X += player.currentSpeed;
 
-            animation.Update(gameTime, true, location);
+            player.Update(gameTime);
+            foreach (Enemy enemy in enemies)
+            {
+                enemy.Update(gameTime);
+            }
 
             base.Update(gameTime);
         }
@@ -92,7 +115,16 @@ namespace RPGrunner
 
             spriteBatch.Begin();
 
-            animation.Draw(spriteBatch);
+            player.Draw(spriteBatch);
+
+            spriteBatch.End();
+
+            spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, Matrix.CreateTranslation(-translation));
+
+            foreach (Enemy enemy in enemies)
+            {
+                enemy.Draw(spriteBatch);
+            }
 
             spriteBatch.End();
 
