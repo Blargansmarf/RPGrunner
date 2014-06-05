@@ -120,12 +120,15 @@ namespace RPGrunner
                 enemies[currentEnemy].secondaryStats.health -= player.secondaryStats.attack;
                 player.secondaryStats.health -= enemies[currentEnemy].secondaryStats.attack;
 
-                player.BattleUpdate(gameTime);
-
                 if (enemies[currentEnemy].secondaryStats.health <= 0)
                 {
                     enemies.RemoveAt(currentEnemy);
                     battle = false;
+                }
+                else
+                {
+                    player.BattleUpdate(gameTime);
+                    enemies[currentEnemy].BattleUpdate(gameTime);
                 }
             }
 

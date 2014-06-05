@@ -27,6 +27,8 @@ namespace RPGrunner
         Rectangle currentHealthBar, missingHealthBar;
         Texture2D healthBarTexture;
 
+        int maxHealthBarLength;
+
         public struct PStats
         {
             public int strength, vitality, intelligence, dexterity;
@@ -71,8 +73,10 @@ namespace RPGrunner
 
             startLoc = new Vector2(Game1.screenWidth / 10, (float)(Game1.screenHeight / 1.33));
 
-            currentHealthBar = new Rectangle((int)startLoc.X - (int)playerDimensions.X,
-                (int)startLoc.Y - (int)playerDimensions.Y, (int)playerDimensions.X * 3, (int)playerDimensions.Y / 2);
+            maxHealthBarLength = (int)Game1.screenWidth / 5;
+
+            currentHealthBar = new Rectangle((int)Game1.screenWidth/20, (int)Game1.screenHeight/20,
+                (int)Game1.screenWidth/5, (int)Game1.screenHeight/20);
             missingHealthBar = new Rectangle(currentHealthBar.Right, currentHealthBar.Y, 0, currentHealthBar.Height); 
 
             loc = startLoc;
@@ -109,8 +113,6 @@ namespace RPGrunner
 
             startLoc.Y = (float)((float)(Game1.screenHeight / 1.33) + Game1.screenHeight * (currentDepth * .11));
             loc.Y = startLoc.Y;
-            currentHealthBar.Y = (int)startLoc.Y - (int)playerDimensions.Y;
-            missingHealthBar.Y = (int)startLoc.Y - (int)playerDimensions.Y;
 
             animation.Update(gameTime, startLoc);
 
@@ -120,10 +122,10 @@ namespace RPGrunner
 
         public void BattleUpdate(GameTime gameTime)
         {
-            missingHealthBar.Width = (int)((playerDimensions.X * 3) /
-                (secondaryStats.maxHealth - (secondaryStats.maxHealth - secondaryStats.health))
-                * (playerDimensions.X * 3));
-            currentHealthBar.Width = (int)playerDimensions.X*3 - missingHealthBar.Width;
+            float currentHealthPercent = secondaryStats.health / (float)secondaryStats.maxHealth;
+
+            currentHealthBar.Width = (int)(maxHealthBarLength * currentHealthPercent);
+            missingHealthBar.Width = maxHealthBarLength - currentHealthBar.Width;
 
             missingHealthBar.X = currentHealthBar.Right;
         }

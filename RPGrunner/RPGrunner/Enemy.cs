@@ -17,6 +17,10 @@ namespace RPGrunner
         Texture2D spriteSheet;
         List <SpriteAnimation> animations;
         public int depth;
+        Vector2 dimensions;
+
+        Rectangle currentHealthBar, missingHealthBar;
+        Texture2D healthBarTexture;
 
         public struct PStats
         {
@@ -43,6 +47,9 @@ namespace RPGrunner
 
         public void Initialize(Vector2 position, Vector2 dim, int dept)
         {
+            healthBarTexture = content.Load<Texture2D>("WhiteSquare");
+
+            dimensions = dim;
             primaryStats = new PStats();
             secondaryStats = new SStats();
 
@@ -54,6 +61,10 @@ namespace RPGrunner
             loc = position;
             depth = dept;
             loc.Y += (float)(Game1.screenHeight * (depth * .11));
+
+            currentHealthBar = new Rectangle((int)loc.X - (int)dimensions.X,
+                (int)loc.Y - (int)dimensions.Y, (int)dimensions.X * 3, (int)dimensions.Y / 2);
+            missingHealthBar = new Rectangle(currentHealthBar.Right, currentHealthBar.Y, 0, currentHealthBar.Height); 
         }
 
         public void AddAnimation(string spriteName, int num, double time)
@@ -75,20 +86,20 @@ namespace RPGrunner
 
         public void BattleUpdate(GameTime gameTime)
         {
-            missingHealthBar.Width = (int)((playerDimensions.X * 3) /
-                (secondaryStats.maxHealth - (secondaryStats.maxHealth - secondaryStats.health))
-                * (playerDimensions.X * 3));
-            currentHealthBar.Width = (int)playerDimensions.X * 3 - missingHealthBar.Width;
+            float currentHealthPercent = secondaryStats.health / (float)secondaryStats.maxHealth;
+
+            currentHealthBar.Width = (int)(dimensions.X * 3 * currentHealthPercent);
+            missingHealthBar.Width = (int)dimensions.X * 3 - currentHealthBar.Width;
 
             missingHealthBar.X = currentHealthBar.Right;
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            foreach (SpriteAnimation anim in animations)
-            {
-                anim.Draw(spriteBatch);
-            }
+            animations[0].Draw(spriteBatch);
+
+            spriteBatch.Draw(healthBarTexture, currentHealthBar, Color.Green);
+            spriteBatch.Draw(healthBarTexture, missingHealthBar, Color.Red);
         }
     }
 }
