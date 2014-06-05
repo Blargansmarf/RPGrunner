@@ -66,6 +66,41 @@ namespace RPGrunner
             enemies.Add(tempEnemy);
 
             tempEnemy = new Enemy(graphics, Content);
+            tempEnemy.Initialize(new Vector2(1300, (float)(Game1.screenHeight / 1.33)), new Vector2(10, 10), 0);
+            tempEnemy.AddAnimation("AnimationTest", 3, .5);
+            enemies.Add(tempEnemy);
+
+            tempEnemy = new Enemy(graphics, Content);
+            tempEnemy.Initialize(new Vector2(1300, (float)(Game1.screenHeight / 1.33)), new Vector2(10, 10), -1);
+            tempEnemy.AddAnimation("AnimationTest", 3, .5);
+            enemies.Add(tempEnemy);
+
+            tempEnemy = new Enemy(graphics, Content);
+            tempEnemy.Initialize(new Vector2(1300, (float)(Game1.screenHeight / 1.33)), new Vector2(10, 10), 1);
+            tempEnemy.AddAnimation("AnimationTest", 3, .5);
+            enemies.Add(tempEnemy);
+
+            tempEnemy = new Enemy(graphics, Content);
+            tempEnemy.Initialize(new Vector2(1400, (float)(Game1.screenHeight / 1.33)), new Vector2(10, 10), 0);
+            tempEnemy.AddAnimation("AnimationTest", 3, .5);
+            enemies.Add(tempEnemy);
+
+            tempEnemy = new Enemy(graphics, Content);
+            tempEnemy.Initialize(new Vector2(1500, (float)(Game1.screenHeight / 1.33)), new Vector2(10, 10), 0);
+            tempEnemy.AddAnimation("AnimationTest", 3, .5);
+            enemies.Add(tempEnemy);
+
+            tempEnemy = new Enemy(graphics, Content);
+            tempEnemy.Initialize(new Vector2(1400, (float)(Game1.screenHeight / 1.33)), new Vector2(10, 10), -1);
+            tempEnemy.AddAnimation("AnimationTest", 3, .5);
+            enemies.Add(tempEnemy);
+
+            tempEnemy = new Enemy(graphics, Content);
+            tempEnemy.Initialize(new Vector2(1400, (float)(Game1.screenHeight / 1.33)), new Vector2(10, 10), 1);
+            tempEnemy.AddAnimation("AnimationTest", 3, .5);
+            enemies.Add(tempEnemy);
+
+            tempEnemy = new Enemy(graphics, Content);
             tempEnemy.Initialize(new Vector2(1000, (float)(Game1.screenHeight / 1.33)), new Vector2(10, 10), 1);
             tempEnemy.AddAnimation("AnimationTest", 3, .5);
             enemies.Add(tempEnemy);

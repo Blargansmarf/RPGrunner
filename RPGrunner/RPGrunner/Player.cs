@@ -60,7 +60,7 @@ namespace RPGrunner
             LoadContent();
 
             currentDepth = 0;
-            currentSpeed = 1;
+            currentSpeed = 2;
 
             primaryStats = new PStats();
             secondaryStats = new SStats();
