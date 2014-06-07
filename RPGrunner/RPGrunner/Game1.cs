@@ -30,6 +30,8 @@ namespace RPGrunner
         bool battle;
         int currentEnemy;
 
+        GameTime lastEnemyAtk, lastPlayerAtk;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -48,6 +50,9 @@ namespace RPGrunner
         {
             screenHeight = graphics.GraphicsDevice.Viewport.Height;
             screenWidth = graphics.GraphicsDevice.Viewport.Width;
+
+            lastEnemyAtk = new GameTime();
+            lastPlayerAtk = new GameTime();
 
             battle = false;
 
@@ -147,22 +152,41 @@ namespace RPGrunner
                     {
                         battle = true;
                         currentEnemy = enemies.IndexOf(enemy);
+                        lastEnemyAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
+                        lastPlayerAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
+                        player.pState = Player.PlayerState.attacking;
                     }
                 }
             }
             else
             {
-                enemies[currentEnemy].secondaryStats.health -= player.secondaryStats.attack;
-                player.secondaryStats.health -= enemies[currentEnemy].secondaryStats.attack;
+                if (gameTime.TotalGameTime.TotalSeconds - lastEnemyAtk.TotalGameTime.TotalSeconds
+                    >= enemies[currentEnemy].secondaryStats.atkSpeed)
+                {
+                    player.secondaryStats.health -= enemies[currentEnemy].secondaryStats.attack;
+                    lastEnemyAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
+                }
+
+                if (gameTime.TotalGameTime.TotalSeconds - lastPlayerAtk.TotalGameTime.TotalSeconds
+                    >= player.secondaryStats.atkSpeed)
+                {
+                    enemies[currentEnemy].secondaryStats.health -= player.secondaryStats.attack;
+                    lastPlayerAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
+                }
 
                 if (enemies[currentEnemy].secondaryStats.health <= 0)
                 {
                     enemies.RemoveAt(currentEnemy);
                     battle = false;
+                    player.pState = Player.PlayerState.walking;
+                    player.ResetAnimations();
                 }
                 else
                 {
-                    player.BattleUpdate(gameTime);
+                    if (!player.BattleUpdate(gameTime))
+                    {
+                        Exit();
+                    }
                     enemies[currentEnemy].BattleUpdate(gameTime);
                 }
             }

@@ -12,8 +12,8 @@ namespace RPGrunner
 {
     class Player
     {
-        SpriteAnimation animation;
-        Texture2D spriteSheet;
+        SpriteAnimation walkAnimation, attackAnimation;
+        Texture2D walkSheet, attackSheet;
         public Vector2 startLoc, loc;
 
         public Vector2 playerDimensions;
@@ -37,7 +37,7 @@ namespace RPGrunner
         public struct SStats
         {
             public int attack, defense, health, magic, maxHealth, maxMana;
-            public float resistance, dodge, criticalChance, criticalBonus;
+            public float resistance, dodge, criticalChance, criticalBonus, atkSpeed;
         }
 
         public PStats primaryStats;
@@ -46,6 +46,10 @@ namespace RPGrunner
         public float currentSpeed;
 
         public int currentDepth;
+
+        public enum PlayerState { walking, attacking };
+
+        public PlayerState pState;
 
         public Player(GraphicsDeviceManager g, ContentManager c)
         {
@@ -59,6 +63,8 @@ namespace RPGrunner
         {
             LoadContent();
 
+            pState = PlayerState.walking;
+
             currentDepth = 0;
             currentSpeed = 2;
 
@@ -67,7 +73,8 @@ namespace RPGrunner
 
             secondaryStats.maxHealth = 500;
             secondaryStats.health = 500;
-            secondaryStats.attack = 3;
+            secondaryStats.attack = 30;
+            secondaryStats.atkSpeed = 1;
 
             playerDimensions = new Vector2(10, 10);
 
@@ -81,12 +88,14 @@ namespace RPGrunner
 
             loc = startLoc;
 
-            animation = new SpriteAnimation(3, spriteSheet, 1, startLoc);
+            walkAnimation = new SpriteAnimation(2, walkSheet, 1, startLoc);
+            attackAnimation = new SpriteAnimation(2, attackSheet, secondaryStats.atkSpeed, startLoc);
         }
 
         public void LoadContent()
         {
-            spriteSheet = content.Load<Texture2D>("AnimationTest");
+            walkSheet = content.Load<Texture2D>("TestSpriteWalk");
+            attackSheet = content.Load<Texture2D>("TestSpriteAttack");
             healthBarTexture = content.Load<Texture2D>("WhiteSquare");
         }
 
@@ -114,13 +123,13 @@ namespace RPGrunner
             startLoc.Y = (float)((float)(Game1.screenHeight / 1.33) + Game1.screenHeight * (currentDepth * .11));
             loc.Y = startLoc.Y;
 
-            animation.Update(gameTime, startLoc);
+            walkAnimation.Update(gameTime, startLoc);
 
             prevGamePadState = currGamePadState;
             prevKeyState = currKeyState;
         }
 
-        public void BattleUpdate(GameTime gameTime)
+        public bool BattleUpdate(GameTime gameTime)
         {
             float currentHealthPercent = secondaryStats.health / (float)secondaryStats.maxHealth;
 
@@ -128,14 +137,28 @@ namespace RPGrunner
             missingHealthBar.Width = maxHealthBarLength - currentHealthBar.Width;
 
             missingHealthBar.X = currentHealthBar.Right;
+
+            attackAnimation.Update(gameTime, startLoc);
+
+            return secondaryStats.health > 0;
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            animation.Draw(spriteBatch);
+            if(pState == PlayerState.walking)
+                walkAnimation.Draw(spriteBatch);
+
+            if (pState == PlayerState.attacking)
+                attackAnimation.Draw(spriteBatch);
 
             spriteBatch.Draw(healthBarTexture, currentHealthBar, Color.Green);
             spriteBatch.Draw(healthBarTexture, missingHealthBar, Color.Red);
+        }
+
+        public void ResetAnimations()
+        {
+            walkAnimation.Reset();
+            attackAnimation.Reset();
         }
     }
 }

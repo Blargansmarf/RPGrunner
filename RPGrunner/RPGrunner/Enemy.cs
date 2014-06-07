@@ -30,7 +30,7 @@ namespace RPGrunner
         public struct SStats
         {
             public int attack, defense, health, magic, maxHealth, maxMana;
-            public float resistance, dodge, criticalChance, criticalBonus;
+            public float resistance, dodge, criticalChance, criticalBonus, atkSpeed;
         }
 
         public PStats primaryStats;
@@ -55,7 +55,8 @@ namespace RPGrunner
 
             secondaryStats.maxHealth = 100;
             secondaryStats.health = 100;
-            secondaryStats.attack = 3;
+            secondaryStats.attack = 10;
+            secondaryStats.atkSpeed = 2;
 
             animations = new List<SpriteAnimation>();
             loc = position;
