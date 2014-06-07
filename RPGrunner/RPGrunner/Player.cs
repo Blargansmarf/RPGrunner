@@ -66,7 +66,7 @@ namespace RPGrunner
             pState = PlayerState.walking;
 
             currentDepth = 0;
-            currentSpeed = 2;
+            currentSpeed = Game1.screenWidth / 500;
 
             primaryStats = new PStats();
             secondaryStats = new SStats();
@@ -76,9 +76,9 @@ namespace RPGrunner
             secondaryStats.attack = 30;
             secondaryStats.atkSpeed = 1;
 
-            playerDimensions = new Vector2(10, 10);
+            playerDimensions = new Vector2(walkSheet.Width/2, walkSheet.Height);
 
-            startLoc = new Vector2(Game1.screenWidth / 10, (float)(Game1.screenHeight / 1.33));
+            startLoc = new Vector2(Game1.screenWidth / 10, (float)(Game1.screenHeight / 1.33)) - playerDimensions/2;
 
             maxHealthBarLength = (int)Game1.screenWidth / 5;
 
@@ -88,7 +88,7 @@ namespace RPGrunner
 
             loc = startLoc;
 
-            walkAnimation = new SpriteAnimation(2, walkSheet, 1, startLoc);
+            walkAnimation = new SpriteAnimation(2, walkSheet, .3, startLoc);
             attackAnimation = new SpriteAnimation(2, attackSheet, secondaryStats.atkSpeed, startLoc);
         }
 
@@ -120,10 +120,12 @@ namespace RPGrunner
                 currentDepth--;
             }
 
-            startLoc.Y = (float)((float)(Game1.screenHeight / 1.33) + Game1.screenHeight * (currentDepth * .11));
+            startLoc.Y = (float)((float)(Game1.screenHeight / 1.33) + Game1.screenHeight * (currentDepth * .11)) - playerDimensions.Y / 2;
             loc.Y = startLoc.Y;
 
             walkAnimation.Update(gameTime, startLoc);
+            attackAnimation.Update(gameTime, startLoc);
+            attackAnimation.Reset();
 
             prevGamePadState = currGamePadState;
             prevKeyState = currKeyState;

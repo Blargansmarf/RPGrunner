@@ -155,6 +155,7 @@ namespace RPGrunner
                         lastEnemyAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
                         lastPlayerAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
                         player.pState = Player.PlayerState.attacking;
+                        player.ResetAnimations();
                     }
                 }
             }

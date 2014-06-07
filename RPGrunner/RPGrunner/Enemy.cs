@@ -59,7 +59,7 @@ namespace RPGrunner
             secondaryStats.atkSpeed = 2;
 
             animations = new List<SpriteAnimation>();
-            loc = position;
+            loc = position - dimensions/2;
             depth = dept;
             loc.Y += (float)(Game1.screenHeight * (depth * .11));
 
