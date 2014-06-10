@@ -39,6 +39,8 @@ namespace RPGrunner
         GraphicsDeviceManager graphics;
         ContentManager content;
 
+        public int attackNum;
+
         public Enemy(GraphicsDeviceManager g, ContentManager c)
         {
             graphics = g;
@@ -55,13 +57,15 @@ namespace RPGrunner
 
             secondaryStats.maxHealth = 100;
             secondaryStats.health = 100;
-            secondaryStats.attack = 10;
+            secondaryStats.attack = 15;
             secondaryStats.atkSpeed = 2;
 
             animations = new List<SpriteAnimation>();
             loc = position - dimensions/2;
             depth = dept;
             loc.Y += (float)(Game1.screenHeight * (depth * .11));
+
+            attackNum = 0;
 
             currentHealthBar = new Rectangle((int)loc.X - (int)dimensions.X,
                 (int)loc.Y - (int)dimensions.Y, (int)dimensions.X * 3, (int)dimensions.Y / 2);

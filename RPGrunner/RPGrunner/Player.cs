@@ -46,6 +46,7 @@ namespace RPGrunner
         public float currentSpeed;
 
         public int currentDepth;
+        public int attackNum;
 
         public enum PlayerState { walking, attacking };
 
@@ -73,8 +74,10 @@ namespace RPGrunner
 
             secondaryStats.maxHealth = 500;
             secondaryStats.health = 500;
-            secondaryStats.attack = 30;
+            secondaryStats.attack = 20;
             secondaryStats.atkSpeed = 1;
+
+            attackNum = 0;
 
             playerDimensions = new Vector2(walkSheet.Width/2, walkSheet.Height);
 

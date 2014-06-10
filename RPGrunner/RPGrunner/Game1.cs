@@ -32,6 +32,16 @@ namespace RPGrunner
 
         GameTime lastEnemyAtk, lastPlayerAtk;
 
+        SpriteFont basicFont;
+
+        struct DamageText
+        {
+            public Vector2 pos;
+            public Color color;
+        }
+
+        List <DamageText> enemyDamageText, playerDamageText;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -57,6 +67,8 @@ namespace RPGrunner
             battle = false;
 
             translation = new Vector3();
+            enemyDamageText = new List<DamageText>();
+            playerDamageText = new List<DamageText>();
 
             player = new Player(graphics, Content);
             enemies = new List<Enemy>();
@@ -121,6 +133,8 @@ namespace RPGrunner
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            basicFont = Content.Load<SpriteFont>("BasicFont");
         }
 
         /// <summary>
@@ -164,15 +178,32 @@ namespace RPGrunner
                 if (gameTime.TotalGameTime.TotalSeconds - lastEnemyAtk.TotalGameTime.TotalSeconds
                     >= enemies[currentEnemy].secondaryStats.atkSpeed)
                 {
+                    enemies[currentEnemy].attackNum++;
                     player.secondaryStats.health -= enemies[currentEnemy].secondaryStats.attack;
                     lastEnemyAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
+                    
+                    DamageText tempDamText = new DamageText();
+                    tempDamText.pos = player.startLoc;
+                    tempDamText.pos.X += 1;
+                    tempDamText.pos.Y -= 20;
+                    tempDamText.color = new Color(255, 0, 0, 255);
+                    enemyDamageText.Add(tempDamText);
                 }
 
                 if (gameTime.TotalGameTime.TotalSeconds - lastPlayerAtk.TotalGameTime.TotalSeconds
                     >= player.secondaryStats.atkSpeed)
                 {
+                    player.attackNum++;
                     enemies[currentEnemy].secondaryStats.health -= player.secondaryStats.attack;
                     lastPlayerAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
+
+                    DamageText tempDamText2 = new DamageText();
+                    tempDamText2.pos = player.startLoc;
+                    tempDamText2.pos.X += 1;
+                    tempDamText2.pos.Y -= 20;
+                    tempDamText2.pos.X += 22;
+                    tempDamText2.color = new Color(255, 0, 0, 255);
+                    playerDamageText.Add(tempDamText2);
                 }
 
                 if (enemies[currentEnemy].secondaryStats.health <= 0)
@@ -180,10 +211,45 @@ namespace RPGrunner
                     enemies.RemoveAt(currentEnemy);
                     battle = false;
                     player.pState = Player.PlayerState.walking;
+                    player.attackNum = 0;
                     player.ResetAnimations();
+                    playerDamageText.Clear();
+                    enemyDamageText.Clear();
                 }
                 else
                 {
+                    for (int x = 0; x < enemyDamageText.Count; x++)
+                    {
+                        DamageText temp = new DamageText();
+                        temp.pos.X = enemyDamageText[x].pos.X;
+                        temp.pos.Y = enemyDamageText[x].pos.Y - .2f;
+                        temp.color = enemyDamageText[x].color;
+                        temp.color.A -= 3;
+                        if (temp.color.A < 3)
+                        {
+                            enemyDamageText.RemoveAt(x);
+                            x--;
+                        }
+                        else
+                            enemyDamageText[x] = temp;
+                    }
+
+                    for (int x = 0; x < playerDamageText.Count; x++)
+                    {
+                        DamageText temp = new DamageText();
+                        temp.pos.X = playerDamageText[x].pos.X;
+                        temp.pos.Y = playerDamageText[x].pos.Y - .2f;
+                        temp.color = new Color(255, 0, 0, playerDamageText[x].color.A);
+                        temp.color.A -= 3;
+                        if (temp.color.A < 3)
+                        {
+                            playerDamageText.RemoveAt(x);
+                            x--;
+                        }
+                        else
+                            playerDamageText[x] = temp;
+                    }
+
                     if (!player.BattleUpdate(gameTime))
                     {
                         Exit();
@@ -202,11 +268,18 @@ namespace RPGrunner
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Peru);
 
             spriteBatch.Begin();
 
             player.Draw(spriteBatch);
+            if (battle)
+            {
+                foreach (DamageText text in enemyDamageText)
+                    spriteBatch.DrawString(basicFont, enemies[currentEnemy].secondaryStats.attack + "", text.pos, text.color);
+                foreach (DamageText text in playerDamageText)
+                    spriteBatch.DrawString(basicFont, player.secondaryStats.attack + "", text.pos, text.color);
+            }
 
             spriteBatch.End();
 
