@@ -31,6 +31,12 @@ namespace RPGrunner
         int currentEnemy;
 
         GameTime lastEnemyAtk, lastPlayerAtk;
+        float pBattlePauseStart, pBattlePauseEnd;
+        float eBattlePauseStart, eBattlePauseEnd;
+        float battlePauseTime;
+
+        KeyboardState prevKeyState, currKeyState;
+        GamePadState prevGamePadState, currGamePadState;
 
         SpriteFont basicFont;
 
@@ -41,6 +47,12 @@ namespace RPGrunner
         }
 
         List <DamageText> enemyDamageText, playerDamageText;
+
+        enum GameState { Playing, MainMenu };
+
+        GameState gameState;
+
+        bool paused;
 
         public Game1()
         {
@@ -63,8 +75,16 @@ namespace RPGrunner
 
             lastEnemyAtk = new GameTime();
             lastPlayerAtk = new GameTime();
+            eBattlePauseStart = 0;
+            eBattlePauseEnd = 0;
+            pBattlePauseStart = 0;
+            pBattlePauseEnd = 0;
+            battlePauseTime = 0;
 
             battle = false;
+            paused = false;
+
+            gameState = GameState.Playing;
 
             translation = new Vector3();
             enemyDamageText = new List<DamageText>();
@@ -153,111 +173,162 @@ namespace RPGrunner
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            currKeyState = Keyboard.GetState();
+            currGamePadState = GamePad.GetState(PlayerIndex.One);
+
             if (!battle)
             {
-                translation.X += player.currentSpeed;
-
-                player.Update(gameTime);
-                foreach (Enemy enemy in enemies)
+                if (!paused)
                 {
-                    enemy.Update(gameTime);
-                    if (Math.Abs(player.loc.X + player.playerDimensions.X - enemy.loc.X) <= 5
-                        && enemy.depth == player.currentDepth)
+                    if (prevGamePadState.IsButtonUp(Buttons.Start) && currGamePadState.IsButtonDown(Buttons.Start) ||
+                        prevKeyState.IsKeyUp(Keys.Enter) && currKeyState.IsKeyDown(Keys.Enter))
                     {
-                        battle = true;
-                        currentEnemy = enemies.IndexOf(enemy);
-                        lastEnemyAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
-                        lastPlayerAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
-                        player.pState = Player.PlayerState.attacking;
-                        player.ResetAnimations();
+                        paused = true;
+                    }
+
+                    translation.X += player.currentSpeed;
+
+                    player.Update(gameTime);
+                    foreach (Enemy enemy in enemies)
+                    {
+                        enemy.Update(gameTime);
+                        if (Math.Abs(player.loc.X + player.playerDimensions.X - enemy.loc.X) <= 5
+                            && enemy.depth == player.currentDepth)
+                        {
+                            battle = true;
+                            currentEnemy = enemies.IndexOf(enemy);
+                            lastEnemyAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
+                            lastPlayerAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
+                            player.pState = Player.PlayerState.attacking;
+                            player.ResetAnimations();
+                        }
+                    }
+                }
+                else
+                {
+                    if (prevGamePadState.IsButtonUp(Buttons.Start) && currGamePadState.IsButtonDown(Buttons.Start) ||
+                        prevKeyState.IsKeyUp(Keys.Enter) && currKeyState.IsKeyDown(Keys.Enter))
+                    {
+                        paused = false;
                     }
                 }
             }
             else
             {
-                if (gameTime.TotalGameTime.TotalSeconds - lastEnemyAtk.TotalGameTime.TotalSeconds
-                    >= enemies[currentEnemy].secondaryStats.atkSpeed)
+                if (!paused)
                 {
-                    enemies[currentEnemy].attackNum++;
-                    player.secondaryStats.health -= enemies[currentEnemy].secondaryStats.attack;
-                    lastEnemyAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
-                    
-                    DamageText tempDamText = new DamageText();
-                    tempDamText.pos = player.startLoc;
-                    tempDamText.pos.X += 1;
-                    tempDamText.pos.Y -= 20;
-                    tempDamText.color = new Color(255, 0, 0, 255);
-                    enemyDamageText.Add(tempDamText);
-                }
+                    if (prevGamePadState.IsButtonUp(Buttons.Start) && currGamePadState.IsButtonDown(Buttons.Start) ||
+                        prevKeyState.IsKeyUp(Keys.Enter) && currKeyState.IsKeyDown(Keys.Enter))
+                    {
+                        paused = true;
+                        eBattlePauseStart = (float)gameTime.TotalGameTime.TotalSeconds;
+                        pBattlePauseStart = (float)gameTime.TotalGameTime.TotalSeconds;
+                        lastEnemyAtk.TotalGameTime.TotalSeconds += battlePauseTime;
+                    }
 
-                if (gameTime.TotalGameTime.TotalSeconds - lastPlayerAtk.TotalGameTime.TotalSeconds
-                    >= player.secondaryStats.atkSpeed)
-                {
-                    player.attackNum++;
-                    enemies[currentEnemy].secondaryStats.health -= player.secondaryStats.attack;
-                    lastPlayerAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
+                    if (gameTime.TotalGameTime.TotalSeconds - (lastEnemyAtk.TotalGameTime.TotalSeconds +
+                        (eBattlePauseEnd - eBattlePauseStart))
+                        >= enemies[currentEnemy].secondaryStats.atkSpeed)
+                    {
+                        enemies[currentEnemy].attackNum++;
+                        player.secondaryStats.health -= enemies[currentEnemy].secondaryStats.attack;
+                        lastEnemyAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
 
-                    DamageText tempDamText2 = new DamageText();
-                    tempDamText2.pos = player.startLoc;
-                    tempDamText2.pos.X += 1;
-                    tempDamText2.pos.Y -= 20;
-                    tempDamText2.pos.X += 22;
-                    tempDamText2.color = new Color(255, 0, 0, 255);
-                    playerDamageText.Add(tempDamText2);
-                }
+                        DamageText tempDamText = new DamageText();
+                        tempDamText.pos = player.startLoc;
+                        tempDamText.pos.X += 1;
+                        tempDamText.pos.Y -= 20;
+                        tempDamText.color = new Color(255, 0, 0, 255);
+                        enemyDamageText.Add(tempDamText);
+                        eBattlePauseEnd = 0;
+                        eBattlePauseStart = 0;
+                    }
 
-                if (enemies[currentEnemy].secondaryStats.health <= 0)
-                {
-                    enemies.RemoveAt(currentEnemy);
-                    battle = false;
-                    player.pState = Player.PlayerState.walking;
-                    player.attackNum = 0;
-                    player.ResetAnimations();
-                    playerDamageText.Clear();
-                    enemyDamageText.Clear();
+                    if (gameTime.TotalGameTime.TotalSeconds - (lastPlayerAtk.TotalGameTime.TotalSeconds +
+                        (pBattlePauseEnd - pBattlePauseStart))
+                        >= player.secondaryStats.atkSpeed)
+                    {
+                        player.attackNum++;
+                        enemies[currentEnemy].secondaryStats.health -= player.secondaryStats.attack;
+                        lastPlayerAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
+
+                        DamageText tempDamText2 = new DamageText();
+                        tempDamText2.pos = player.startLoc;
+                        tempDamText2.pos.X += 1;
+                        tempDamText2.pos.Y -= 20;
+                        tempDamText2.pos.X += 22;
+                        tempDamText2.color = new Color(255, 0, 0, 255);
+                        playerDamageText.Add(tempDamText2);
+                        pBattlePauseEnd = 0;
+                        pBattlePauseStart = 0;
+                    }
+
+                    if (enemies[currentEnemy].secondaryStats.health <= 0)
+                    {
+                        enemies.RemoveAt(currentEnemy);
+                        battle = false;
+                        player.pState = Player.PlayerState.walking;
+                        player.attackNum = 0;
+                        player.ResetAnimations();
+                        playerDamageText.Clear();
+                        enemyDamageText.Clear();
+                    }
+                    else
+                    {
+                        for (int x = 0; x < enemyDamageText.Count; x++)
+                        {
+                            DamageText temp = new DamageText();
+                            temp.pos.X = enemyDamageText[x].pos.X;
+                            temp.pos.Y = enemyDamageText[x].pos.Y - .2f;
+                            temp.color = enemyDamageText[x].color;
+                            temp.color.A -= 3;
+                            if (temp.color.A < 3)
+                            {
+                                enemyDamageText.RemoveAt(x);
+                                x--;
+                            }
+                            else
+                                enemyDamageText[x] = temp;
+                        }
+
+                        for (int x = 0; x < playerDamageText.Count; x++)
+                        {
+                            DamageText temp = new DamageText();
+                            temp.pos.X = playerDamageText[x].pos.X;
+                            temp.pos.Y = playerDamageText[x].pos.Y - .2f;
+                            temp.color = new Color(255, 0, 0, playerDamageText[x].color.A);
+                            temp.color.A -= 3;
+                            if (temp.color.A < 3)
+                            {
+                                playerDamageText.RemoveAt(x);
+                                x--;
+                            }
+                            else
+                                playerDamageText[x] = temp;
+                        }
+
+                        if (!player.BattleUpdate(gameTime))
+                        {
+                            Exit();
+                        }
+                        enemies[currentEnemy].BattleUpdate(gameTime);
+                    }
                 }
                 else
                 {
-                    for (int x = 0; x < enemyDamageText.Count; x++)
+                    if (prevGamePadState.IsButtonUp(Buttons.Start) && currGamePadState.IsButtonDown(Buttons.Start) ||
+                        prevKeyState.IsKeyUp(Keys.Enter) && currKeyState.IsKeyDown(Keys.Enter))
                     {
-                        DamageText temp = new DamageText();
-                        temp.pos.X = enemyDamageText[x].pos.X;
-                        temp.pos.Y = enemyDamageText[x].pos.Y - .2f;
-                        temp.color = enemyDamageText[x].color;
-                        temp.color.A -= 3;
-                        if (temp.color.A < 3)
-                        {
-                            enemyDamageText.RemoveAt(x);
-                            x--;
-                        }
-                        else
-                            enemyDamageText[x] = temp;
+                        paused = false;
+                        pBattlePauseEnd = (float)gameTime.TotalGameTime.TotalSeconds;
+                        eBattlePauseEnd = (float)gameTime.TotalGameTime.TotalSeconds;
+                        Console.WriteLine(eBattlePauseEnd - eBattlePauseStart);
                     }
-
-                    for (int x = 0; x < playerDamageText.Count; x++)
-                    {
-                        DamageText temp = new DamageText();
-                        temp.pos.X = playerDamageText[x].pos.X;
-                        temp.pos.Y = playerDamageText[x].pos.Y - .2f;
-                        temp.color = new Color(255, 0, 0, playerDamageText[x].color.A);
-                        temp.color.A -= 3;
-                        if (temp.color.A < 3)
-                        {
-                            playerDamageText.RemoveAt(x);
-                            x--;
-                        }
-                        else
-                            playerDamageText[x] = temp;
-                    }
-
-                    if (!player.BattleUpdate(gameTime))
-                    {
-                        Exit();
-                    }
-                    enemies[currentEnemy].BattleUpdate(gameTime);
                 }
             }
 
+            prevKeyState = currKeyState;
+            prevGamePadState = currGamePadState;
 
             base.Update(gameTime);
         }
@@ -268,7 +339,7 @@ namespace RPGrunner
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Peru);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin();
 
