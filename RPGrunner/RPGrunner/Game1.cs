@@ -54,6 +54,7 @@ namespace RPGrunner
 
         int currentMenuChoice;
         int mainMenuMaxChoice;
+        int pauseMenuMaxChoice;
 
         Vector2 TitlePosition, StartEntryPosition, EntrySpacing;
 
@@ -96,9 +97,10 @@ namespace RPGrunner
 
         private void InitializeMenus()
         {
+            currentMenuChoice = 0;
+
             List<String> tempList = new List<String>();
 
-            currentMenuChoice = 0;
             mainMenuMaxChoice = 3;
 
             tempList.Add("Main Menu");
@@ -108,8 +110,19 @@ namespace RPGrunner
 
             menus.Add(tempList);
 
-            TitlePosition = new Vector2(screenWidth * .33f, screenHeight * .33f);
-            StartEntryPosition = new Vector2(screenWidth * .33f, screenHeight * .5f);
+            tempList = new List<String>();
+
+            pauseMenuMaxChoice = 3;
+
+            tempList.Add("Paused");
+            tempList.Add("Resume");
+            tempList.Add("Main Menu");
+            tempList.Add("Exit Game");
+
+            menus.Add(tempList);
+
+            TitlePosition = new Vector2(screenWidth * .45f, screenHeight * .33f);
+            StartEntryPosition = new Vector2(screenWidth * .45f, screenHeight * .5f);
             EntrySpacing = new Vector2(0, screenHeight * .075f);
         }
 
@@ -247,6 +260,7 @@ namespace RPGrunner
                             prevKeyState.IsKeyUp(Keys.Enter) && currKeyState.IsKeyDown(Keys.Enter))
                         {
                             paused = true;
+                            currentMenuChoice = 0;
                         }
 
                         translation.X += player.currentSpeed;
@@ -269,6 +283,31 @@ namespace RPGrunner
                     }
                     else
                     {
+                        processMenuMove();
+
+                        if (currentMenuChoice < 0)
+                            currentMenuChoice = pauseMenuMaxChoice - 1;
+                        if (currentMenuChoice >= pauseMenuMaxChoice)
+                            currentMenuChoice = 0;
+
+                        if (currKeyState.IsKeyDown(Keys.Space) && prevKeyState.IsKeyUp(Keys.Space) ||
+                            currGamePadState.IsButtonDown(Buttons.A) && prevGamePadState.IsButtonUp(Buttons.A))
+                        {
+                            if (currentMenuChoice == 0)
+                            {
+                                paused = false;
+                            }
+                            if (currentMenuChoice == 1)
+                            {
+                                gameState = GameState.MainMenu;
+                                currentMenuChoice = 0;
+                            }
+                            if (currentMenuChoice == 2)
+                            {
+                                Exit();
+                            }
+                        }
+
                         if (prevGamePadState.IsButtonUp(Buttons.Start) && currGamePadState.IsButtonDown(Buttons.Start) ||
                             prevKeyState.IsKeyUp(Keys.Enter) && currKeyState.IsKeyDown(Keys.Enter))
                         {
@@ -392,11 +431,30 @@ namespace RPGrunner
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, Matrix.CreateTranslation(-translation));
+
+            if (gameState == GameState.Playing)
+            {
+                foreach (Enemy enemy in enemies)
+                {
+                    enemy.Draw(spriteBatch);
+                }
+            }
+
+            spriteBatch.End();
+
             spriteBatch.Begin();
 
-            if(gameState == GameState.Playing)
+            if (gameState == GameState.Playing)
+            {
                 player.Draw(spriteBatch);
-            
+
+                if (paused)
+                {
+                    DrawMenu(1);
+                }
+            }
+
             if (battle)
             {
                 foreach (DamageText text in enemyDamageText)
@@ -409,16 +467,6 @@ namespace RPGrunner
             {
                 DrawMenu(0);
             }
-
-            spriteBatch.End();
-
-            spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, Matrix.CreateTranslation(-translation));
-
-            if(gameState == GameState.Playing)
-                foreach (Enemy enemy in enemies)
-                {
-                    enemy.Draw(spriteBatch);
-                }
 
             spriteBatch.End();
 
