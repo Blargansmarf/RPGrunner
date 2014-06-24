@@ -79,7 +79,7 @@ namespace RPGrunner
 
             attackNum = 0;
 
-            playerDimensions = new Vector2(walkSheet.Width/2, walkSheet.Height);
+            playerDimensions = new Vector2(60, 90);
 
             startLoc = new Vector2(Game1.screenWidth / 10, (float)(Game1.screenHeight / 1.33)) - playerDimensions/2;
 
@@ -91,8 +91,10 @@ namespace RPGrunner
 
             loc = startLoc;
 
-            walkAnimation = new SpriteAnimation(4, walkSheet, .3, startLoc);
-            attackAnimation = new SpriteAnimation(2, attackSheet, secondaryStats.atkSpeed, startLoc);
+            walkAnimation = new SpriteAnimation(4, walkSheet, .3, new Rectangle((int)startLoc.X, (int)startLoc.Y,
+                                                                (int)playerDimensions.X, (int)playerDimensions.Y));
+            attackAnimation = new SpriteAnimation(2, attackSheet, secondaryStats.atkSpeed, new Rectangle((int)startLoc.X, (int)startLoc.Y,
+                                                                (int)playerDimensions.X, (int)playerDimensions.Y));
         }
 
         public void LoadContent()
@@ -126,8 +128,10 @@ namespace RPGrunner
             startLoc.Y = (float)((float)(Game1.screenHeight / 1.33) + Game1.screenHeight * (currentDepth * .11)) - playerDimensions.Y / 2;
             loc.Y = startLoc.Y;
 
-            walkAnimation.Update(gameTime, startLoc);
-            attackAnimation.Update(gameTime, startLoc);
+            walkAnimation.Update(gameTime, new Rectangle((int)startLoc.X, (int)startLoc.Y,
+                                                                (int)playerDimensions.X, (int)playerDimensions.Y));
+            attackAnimation.Update(gameTime, new Rectangle((int)startLoc.X, (int)startLoc.Y,
+                                                                (int)playerDimensions.X, (int)playerDimensions.Y));
             attackAnimation.Reset();
 
             prevGamePadState = currGamePadState;
@@ -143,7 +147,8 @@ namespace RPGrunner
 
             missingHealthBar.X = currentHealthBar.Right;
 
-            attackAnimation.Update(gameTime, startLoc);
+            attackAnimation.Update(gameTime, new Rectangle((int)startLoc.X, (int)startLoc.Y,
+                                                                (int)playerDimensions.X, (int)playerDimensions.Y));
 
             return secondaryStats.health > 0;
         }

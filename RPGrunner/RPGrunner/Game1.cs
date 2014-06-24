@@ -71,11 +71,13 @@ namespace RPGrunner
         /// </summary>
         protected override void Initialize()
         {
-            screenHeight = graphics.GraphicsDevice.Viewport.Height;
-            screenWidth = graphics.GraphicsDevice.Viewport.Width;
+            screenHeight = 700;
+            screenWidth = 1100;
 
-            currentMenuChoice = 0;
-            mainMenuMaxChoice = 2;
+            graphics.PreferredBackBufferHeight = (int)screenHeight;
+            graphics.PreferredBackBufferWidth = (int)screenWidth;
+
+            graphics.ApplyChanges();
 
             lastEnemyAtk = new GameTime();
             lastPlayerAtk = new GameTime();
@@ -89,10 +91,6 @@ namespace RPGrunner
 
             InitializeMenus();
 
-            TitlePosition = new Vector2(screenWidth * .33f, screenHeight * .25f);
-            StartEntryPosition = new Vector2(screenWidth * .33f, screenHeight * .33f);
-            EntrySpacing = new Vector2(0, screenHeight * .1f);
-
             base.Initialize();
         }
 
@@ -100,11 +98,19 @@ namespace RPGrunner
         {
             List<String> tempList = new List<String>();
 
+            currentMenuChoice = 0;
+            mainMenuMaxChoice = 3;
+
             tempList.Add("Main Menu");
             tempList.Add("Play Game");
+            tempList.Add("Fullscreen Toggle");
             tempList.Add("Exit Game");
 
             menus.Add(tempList);
+
+            TitlePosition = new Vector2(screenWidth * .33f, screenHeight * .33f);
+            StartEntryPosition = new Vector2(screenWidth * .33f, screenHeight * .5f);
+            EntrySpacing = new Vector2(0, screenHeight * .075f);
         }
 
         private void GameplayInitialize()
@@ -199,6 +205,9 @@ namespace RPGrunner
             currKeyState = Keyboard.GetState();
             currGamePadState = GamePad.GetState(PlayerIndex.One);
 
+            if (currKeyState.IsKeyDown(Keys.Delete))
+                Exit();
+
             if (gameState == GameState.MainMenu)
             {
                 processMenuMove();
@@ -217,6 +226,11 @@ namespace RPGrunner
                         GameplayInitialize();
                     }
                     if (currentMenuChoice == 1)
+                    {
+                        graphics.IsFullScreen = !graphics.IsFullScreen;
+                        graphics.ApplyChanges();
+                    }
+                    if (currentMenuChoice == 2)
                     {
                         Exit();
                     }
@@ -393,7 +407,7 @@ namespace RPGrunner
 
             if (gameState == GameState.MainMenu)
             {
-                //foreach and then for
+                DrawMenu(0);
             }
 
             spriteBatch.End();
@@ -409,6 +423,23 @@ namespace RPGrunner
             spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        private void DrawMenu(int x)
+        {
+            spriteBatch.DrawString(titleFont, menus[x][0], TitlePosition, Color.Black);
+
+            for (int i = 1; i < menus[x].Count; i++)
+            {
+                Color textCol = new Color();
+                
+                if (currentMenuChoice == i - 1)
+                    textCol = Color.Black;
+                else
+                    textCol = Color.DarkGray;
+
+                spriteBatch.DrawString(menuEntryFont, menus[x][i], StartEntryPosition + EntrySpacing * (i - 1), textCol);
+            }
         }
     }
 }

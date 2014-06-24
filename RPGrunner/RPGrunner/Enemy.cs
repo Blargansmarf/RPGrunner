@@ -76,7 +76,8 @@ namespace RPGrunner
         {
             spriteSheet = content.Load<Texture2D>("Textures/" + spriteName);
 
-            SpriteAnimation anim = new SpriteAnimation(num, spriteSheet, time, loc);
+            SpriteAnimation anim = new SpriteAnimation(num, spriteSheet, time, new Rectangle((int)loc.X, (int)loc.Y,
+                                                                (int)dimensions.X, (int)dimensions.Y));
 
             animations.Add(anim);
         }
@@ -85,7 +86,8 @@ namespace RPGrunner
         {
             foreach (SpriteAnimation anim in animations)
             {
-                anim.Update(gameTime, loc);
+                anim.Update(gameTime, new Rectangle((int)loc.X, (int)loc.Y,
+                                                                (int)dimensions.X, (int)dimensions.Y));
             }
         }
 

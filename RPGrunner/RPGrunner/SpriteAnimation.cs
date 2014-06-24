@@ -17,10 +17,10 @@ namespace RPGrunner
         Texture2D texture;
         double totalTime;
         Rectangle source;
-        Vector2 destination;
+        Rectangle destination;
         GameTime lastFrameTime;
 
-        public SpriteAnimation(int num, Texture2D tex, double time, Vector2 dest)
+        public SpriteAnimation(int num, Texture2D tex, double time, Rectangle dest)
         {
             cells = num;
             texture = tex;
@@ -31,7 +31,7 @@ namespace RPGrunner
             lastFrameTime = new GameTime();
         }
 
-        public void Update(GameTime currentGameTime, Vector2 dest)
+        public void Update(GameTime currentGameTime, Rectangle dest)
         {
             if (currentGameTime.TotalGameTime.TotalSeconds -
                 lastFrameTime.TotalGameTime.TotalSeconds >= totalTime / cells)
