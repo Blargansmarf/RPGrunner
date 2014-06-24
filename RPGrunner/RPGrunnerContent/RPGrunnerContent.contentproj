@@ -42,37 +42,74 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="WhiteSquare.png">
+    <Compile Include="Textures\WhiteSquare.png">
       <Name>WhiteSquare</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnimationTest.png">
+    <Compile Include="Textures\AnimationTest.png">
       <Name>AnimationTest</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TestSpriteAttack.png">
+    <Compile Include="Textures\TestSpriteAttack.png">
       <Name>TestSpriteAttack</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="TestSpriteWalk.png">
+    <Compile Include="Textures\TestSpriteWalk.png">
       <Name>TestSpriteWalk</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BasicFont.spritefont">
-      <Name>BasicFont</Name>
+    <Compile Include="SpriteFonts\DamageFont.spritefont">
+      <Name>DamageFont</Name>
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
       <SubType>Designer</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SpriteFonts\TitleFont.spritefont">
+      <Name>TitleFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SpriteFonts\MenuEntryFont.spritefont">
+      <Name>MenuEntryFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <SubType>Designer</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SpriteFonts\BoldMenuEntryFont.spritefont">
+      <Name>BoldMenuEntryFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <SubType>Designer</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Textures\Hero%28Base%29.png">
+      <Name>Hero%28Base%29</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Textures\HeroWalk%28IP%29.png">
+      <Name>HeroWalk%28IP%29</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

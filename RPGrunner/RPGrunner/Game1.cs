@@ -26,19 +26,17 @@ namespace RPGrunner
         Player player;
 
         List<Enemy> enemies;
+        List<List<String>> menus;
 
         bool battle;
         int currentEnemy;
 
         GameTime lastEnemyAtk, lastPlayerAtk;
-        float pBattlePauseStart, pBattlePauseEnd;
-        float eBattlePauseStart, eBattlePauseEnd;
-        float battlePauseTime;
 
         KeyboardState prevKeyState, currKeyState;
         GamePadState prevGamePadState, currGamePadState;
 
-        SpriteFont basicFont;
+        SpriteFont damageFont, titleFont, menuEntryFont;
 
         struct DamageText
         {
@@ -54,12 +52,15 @@ namespace RPGrunner
 
         bool paused;
 
+        int currentMenuChoice;
+        int mainMenuMaxChoice;
+
+        Vector2 TitlePosition, StartEntryPosition, EntrySpacing;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-
-            //graphics.IsFullScreen = true;
         }
 
         /// <summary>
@@ -73,19 +74,41 @@ namespace RPGrunner
             screenHeight = graphics.GraphicsDevice.Viewport.Height;
             screenWidth = graphics.GraphicsDevice.Viewport.Width;
 
+            currentMenuChoice = 0;
+            mainMenuMaxChoice = 2;
+
             lastEnemyAtk = new GameTime();
             lastPlayerAtk = new GameTime();
-            eBattlePauseStart = 0;
-            eBattlePauseEnd = 0;
-            pBattlePauseStart = 0;
-            pBattlePauseEnd = 0;
-            battlePauseTime = 0;
 
             battle = false;
             paused = false;
 
-            gameState = GameState.Playing;
+            gameState = GameState.MainMenu;
 
+            menus = new List<List<String>>();
+
+            InitializeMenus();
+
+            TitlePosition = new Vector2(screenWidth * .33f, screenHeight * .25f);
+            StartEntryPosition = new Vector2(screenWidth * .33f, screenHeight * .33f);
+            EntrySpacing = new Vector2(0, screenHeight * .1f);
+
+            base.Initialize();
+        }
+
+        private void InitializeMenus()
+        {
+            List<String> tempList = new List<String>();
+
+            tempList.Add("Main Menu");
+            tempList.Add("Play Game");
+            tempList.Add("Exit Game");
+
+            menus.Add(tempList);
+        }
+
+        private void GameplayInitialize()
+        {
             translation = new Vector3();
             enemyDamageText = new List<DamageText>();
             playerDamageText = new List<DamageText>();
@@ -141,8 +164,6 @@ namespace RPGrunner
             tempEnemy.Initialize(new Vector2(1000, (float)(Game1.screenHeight / 1.33)), new Vector2(10, 10), 1);
             tempEnemy.AddAnimation("AnimationTest", 3, .5);
             enemies.Add(tempEnemy);
-
-            base.Initialize();
         }
 
         /// <summary>
@@ -154,7 +175,9 @@ namespace RPGrunner
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            basicFont = Content.Load<SpriteFont>("BasicFont");
+            damageFont = Content.Load<SpriteFont>("SpriteFonts/DamageFont");
+            titleFont = Content.Load<SpriteFont>("SpriteFonts/TitleFont");
+            menuEntryFont = Content.Load<SpriteFont>("SpriteFonts/MenuEntryFont");
         }
 
         /// <summary>
@@ -176,58 +199,72 @@ namespace RPGrunner
             currKeyState = Keyboard.GetState();
             currGamePadState = GamePad.GetState(PlayerIndex.One);
 
-            if (!battle)
+            if (gameState == GameState.MainMenu)
             {
-                if (!paused)
+                processMenuMove();
+                
+                if (currentMenuChoice < 0)
+                    currentMenuChoice = mainMenuMaxChoice - 1;
+                if (currentMenuChoice >= mainMenuMaxChoice)
+                    currentMenuChoice = 0;
+
+                if (currKeyState.IsKeyDown(Keys.Space) && prevKeyState.IsKeyUp(Keys.Space) ||
+                    currGamePadState.IsButtonDown(Buttons.A) && prevGamePadState.IsButtonUp(Buttons.A))
                 {
-                    if (prevGamePadState.IsButtonUp(Buttons.Start) && currGamePadState.IsButtonDown(Buttons.Start) ||
-                        prevKeyState.IsKeyUp(Keys.Enter) && currKeyState.IsKeyDown(Keys.Enter))
+                    if (currentMenuChoice == 0)
                     {
-                        paused = true;
+                        gameState = GameState.Playing;
+                        GameplayInitialize();
                     }
-
-                    translation.X += player.currentSpeed;
-
-                    player.Update(gameTime);
-                    foreach (Enemy enemy in enemies)
+                    if (currentMenuChoice == 1)
                     {
-                        enemy.Update(gameTime);
-                        if (Math.Abs(player.loc.X + player.playerDimensions.X - enemy.loc.X) <= 5
-                            && enemy.depth == player.currentDepth)
+                        Exit();
+                    }
+                }
+            }
+
+            if (gameState == GameState.Playing)
+            {
+                if (!battle)
+                {
+                    if (!paused)
+                    {
+                        if (prevGamePadState.IsButtonUp(Buttons.Start) && currGamePadState.IsButtonDown(Buttons.Start) ||
+                            prevKeyState.IsKeyUp(Keys.Enter) && currKeyState.IsKeyDown(Keys.Enter))
                         {
-                            battle = true;
-                            currentEnemy = enemies.IndexOf(enemy);
-                            lastEnemyAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
-                            lastPlayerAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
-                            player.pState = Player.PlayerState.attacking;
-                            player.ResetAnimations();
+                            paused = true;
+                        }
+
+                        translation.X += player.currentSpeed;
+
+                        player.Update(gameTime);
+                        foreach (Enemy enemy in enemies)
+                        {
+                            enemy.Update(gameTime);
+                            if (Math.Abs(player.loc.X + player.playerDimensions.X - enemy.loc.X) <= 5
+                                && enemy.depth == player.currentDepth)
+                            {
+                                battle = true;
+                                currentEnemy = enemies.IndexOf(enemy);
+                                lastEnemyAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
+                                lastPlayerAtk = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
+                                player.pState = Player.PlayerState.attacking;
+                                player.ResetAnimations();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (prevGamePadState.IsButtonUp(Buttons.Start) && currGamePadState.IsButtonDown(Buttons.Start) ||
+                            prevKeyState.IsKeyUp(Keys.Enter) && currKeyState.IsKeyDown(Keys.Enter))
+                        {
+                            paused = false;
                         }
                     }
                 }
                 else
                 {
-                    if (prevGamePadState.IsButtonUp(Buttons.Start) && currGamePadState.IsButtonDown(Buttons.Start) ||
-                        prevKeyState.IsKeyUp(Keys.Enter) && currKeyState.IsKeyDown(Keys.Enter))
-                    {
-                        paused = false;
-                    }
-                }
-            }
-            else
-            {
-                if (!paused)
-                {
-                    if (prevGamePadState.IsButtonUp(Buttons.Start) && currGamePadState.IsButtonDown(Buttons.Start) ||
-                        prevKeyState.IsKeyUp(Keys.Enter) && currKeyState.IsKeyDown(Keys.Enter))
-                    {
-                        paused = true;
-                        eBattlePauseStart = (float)gameTime.TotalGameTime.TotalSeconds;
-                        pBattlePauseStart = (float)gameTime.TotalGameTime.TotalSeconds;
-                        lastEnemyAtk.TotalGameTime.TotalSeconds += battlePauseTime;
-                    }
-
-                    if (gameTime.TotalGameTime.TotalSeconds - (lastEnemyAtk.TotalGameTime.TotalSeconds +
-                        (eBattlePauseEnd - eBattlePauseStart))
+                    if (gameTime.TotalGameTime.TotalSeconds - lastEnemyAtk.TotalGameTime.TotalSeconds
                         >= enemies[currentEnemy].secondaryStats.atkSpeed)
                     {
                         enemies[currentEnemy].attackNum++;
@@ -240,12 +277,9 @@ namespace RPGrunner
                         tempDamText.pos.Y -= 20;
                         tempDamText.color = new Color(255, 0, 0, 255);
                         enemyDamageText.Add(tempDamText);
-                        eBattlePauseEnd = 0;
-                        eBattlePauseStart = 0;
                     }
 
-                    if (gameTime.TotalGameTime.TotalSeconds - (lastPlayerAtk.TotalGameTime.TotalSeconds +
-                        (pBattlePauseEnd - pBattlePauseStart))
+                    if (gameTime.TotalGameTime.TotalSeconds - lastPlayerAtk.TotalGameTime.TotalSeconds
                         >= player.secondaryStats.atkSpeed)
                     {
                         player.attackNum++;
@@ -259,8 +293,6 @@ namespace RPGrunner
                         tempDamText2.pos.X += 22;
                         tempDamText2.color = new Color(255, 0, 0, 255);
                         playerDamageText.Add(tempDamText2);
-                        pBattlePauseEnd = 0;
-                        pBattlePauseStart = 0;
                     }
 
                     if (enemies[currentEnemy].secondaryStats.health <= 0)
@@ -314,23 +346,28 @@ namespace RPGrunner
                         enemies[currentEnemy].BattleUpdate(gameTime);
                     }
                 }
-                else
-                {
-                    if (prevGamePadState.IsButtonUp(Buttons.Start) && currGamePadState.IsButtonDown(Buttons.Start) ||
-                        prevKeyState.IsKeyUp(Keys.Enter) && currKeyState.IsKeyDown(Keys.Enter))
-                    {
-                        paused = false;
-                        pBattlePauseEnd = (float)gameTime.TotalGameTime.TotalSeconds;
-                        eBattlePauseEnd = (float)gameTime.TotalGameTime.TotalSeconds;
-                        Console.WriteLine(eBattlePauseEnd - eBattlePauseStart);
-                    }
-                }
             }
 
             prevKeyState = currKeyState;
             prevGamePadState = currGamePadState;
 
             base.Update(gameTime);
+        }
+
+        private void processMenuMove()
+        {
+            if (currKeyState.IsKeyDown(Keys.Down) && prevKeyState.IsKeyUp(Keys.Down) ||
+                currGamePadState.IsButtonDown(Buttons.DPadDown) && prevGamePadState.IsButtonUp(Buttons.DPadDown) ||
+                currGamePadState.ThumbSticks.Left.Y < -.3)
+            {
+                currentMenuChoice++;
+            }
+            if (currKeyState.IsKeyDown(Keys.Up) && prevKeyState.IsKeyUp(Keys.Up) ||
+                currGamePadState.IsButtonDown(Buttons.DPadUp) && prevGamePadState.IsButtonUp(Buttons.DPadUp) ||
+                currGamePadState.ThumbSticks.Left.Y > .3)
+            {
+                currentMenuChoice--;
+            }
         }
 
         /// <summary>
@@ -343,23 +380,31 @@ namespace RPGrunner
 
             spriteBatch.Begin();
 
-            player.Draw(spriteBatch);
+            if(gameState == GameState.Playing)
+                player.Draw(spriteBatch);
+            
             if (battle)
             {
                 foreach (DamageText text in enemyDamageText)
-                    spriteBatch.DrawString(basicFont, enemies[currentEnemy].secondaryStats.attack + "", text.pos, text.color);
+                    spriteBatch.DrawString(damageFont, enemies[currentEnemy].secondaryStats.attack + "", text.pos, text.color);
                 foreach (DamageText text in playerDamageText)
-                    spriteBatch.DrawString(basicFont, player.secondaryStats.attack + "", text.pos, text.color);
+                    spriteBatch.DrawString(damageFont, player.secondaryStats.attack + "", text.pos, text.color);
+            }
+
+            if (gameState == GameState.MainMenu)
+            {
+                //foreach and then for
             }
 
             spriteBatch.End();
 
             spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, Matrix.CreateTranslation(-translation));
 
-            foreach (Enemy enemy in enemies)
-            {
-                enemy.Draw(spriteBatch);
-            }
+            if(gameState == GameState.Playing)
+                foreach (Enemy enemy in enemies)
+                {
+                    enemy.Draw(spriteBatch);
+                }
 
             spriteBatch.End();
 

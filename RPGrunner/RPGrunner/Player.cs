@@ -91,15 +91,15 @@ namespace RPGrunner
 
             loc = startLoc;
 
-            walkAnimation = new SpriteAnimation(2, walkSheet, .3, startLoc);
+            walkAnimation = new SpriteAnimation(4, walkSheet, .3, startLoc);
             attackAnimation = new SpriteAnimation(2, attackSheet, secondaryStats.atkSpeed, startLoc);
         }
 
         public void LoadContent()
         {
-            walkSheet = content.Load<Texture2D>("TestSpriteWalk");
-            attackSheet = content.Load<Texture2D>("TestSpriteAttack");
-            healthBarTexture = content.Load<Texture2D>("WhiteSquare");
+            walkSheet = content.Load<Texture2D>("Textures/HeroWalk(IP)");
+            attackSheet = content.Load<Texture2D>("Textures/TestSpriteAttack");
+            healthBarTexture = content.Load<Texture2D>("Textures/WhiteSquare");
         }
 
         public void Update(GameTime gameTime)
@@ -158,6 +158,11 @@ namespace RPGrunner
 
             spriteBatch.Draw(healthBarTexture, currentHealthBar, Color.Green);
             spriteBatch.Draw(healthBarTexture, missingHealthBar, Color.Red);
+        }
+
+        public void MenuDraw(SpriteBatch spriteBatch, int depth)
+        {
+
         }
 
         public void ResetAnimations()

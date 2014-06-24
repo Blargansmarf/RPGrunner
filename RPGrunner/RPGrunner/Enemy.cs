@@ -49,7 +49,7 @@ namespace RPGrunner
 
         public void Initialize(Vector2 position, Vector2 dim, int dept)
         {
-            healthBarTexture = content.Load<Texture2D>("WhiteSquare");
+            healthBarTexture = content.Load<Texture2D>("Textures/WhiteSquare");
 
             dimensions = dim;
             primaryStats = new PStats();
@@ -74,7 +74,7 @@ namespace RPGrunner
 
         public void AddAnimation(string spriteName, int num, double time)
         {
-            spriteSheet = content.Load<Texture2D>(spriteName);
+            spriteSheet = content.Load<Texture2D>("Textures/" + spriteName);
 
             SpriteAnimation anim = new SpriteAnimation(num, spriteSheet, time, loc);
 
