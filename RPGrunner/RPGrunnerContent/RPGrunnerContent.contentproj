@@ -106,8 +106,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Textures\HeroWalk%28IP%29.png">
-      <Name>HeroWalk%28IP%29</Name>
+    <Compile Include="Textures\HeroWalk.png">
+      <Name>HeroWalk</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Textures\HeroArmWalk%28Base%29.png">
+      <Name>HeroArmWalk%28Base%29</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
