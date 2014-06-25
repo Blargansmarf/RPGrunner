@@ -42,6 +42,7 @@ namespace RPGrunner
         {
             public Vector2 pos;
             public Color color;
+            public int value;
         }
 
         List <DamageText> enemyDamageText, playerDamageText;
@@ -329,6 +330,7 @@ namespace RPGrunner
                         tempDamText.pos.X += 1;
                         tempDamText.pos.Y -= 20;
                         tempDamText.color = new Color(255, 0, 0, 255);
+                        tempDamText.value = enemies[currentEnemy].secondaryStats.attack;
                         enemyDamageText.Add(tempDamText);
                     }
 
@@ -346,6 +348,8 @@ namespace RPGrunner
                         tempDamText2.pos.X += 22;
                         tempDamText2.color = new Color(255, 0, 0, 255);
                         playerDamageText.Add(tempDamText2);
+
+                        player.UpdateAttack();
                     }
 
                     if (enemies[currentEnemy].secondaryStats.health <= 0)

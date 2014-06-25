@@ -36,12 +36,14 @@ namespace RPGrunner
 
         public struct SStats
         {
-            public int attack, defense, health, magic, maxHealth, maxMana;
-            public float resistance, dodge, criticalChance, criticalBonus, atkSpeed;
+            public int attack, defense, health, mana, maxHealth, maxMana;
+            public float resistance, dodge, atkSpeed;
         }
 
         public PStats primaryStats;
         public SStats secondaryStats;
+
+        public Item currentItem;
 
         public float currentSpeed;
 
@@ -79,8 +81,14 @@ namespace RPGrunner
 
             secondaryStats.maxHealth = 20 + primaryStats.vitality * 10;
             secondaryStats.health = secondaryStats.maxHealth;
-            secondaryStats.attack = 20;
-            secondaryStats.atkSpeed = 1;
+            secondaryStats.maxMana = 20 + primaryStats.intelligence * 10;
+            secondaryStats.mana = secondaryStats.maxMana;
+
+            currentItem = new Item(graphics, content, 0);
+
+            secondaryStats.attack = currentItem.CalculateNextAttack(primaryStats.strength,
+                primaryStats.intelligence, primaryStats.dexterity);
+            secondaryStats.atkSpeed = currentItem.CalculateAtkSpd(primaryStats.dexterity);
 
             attackNum = 0;
 
@@ -104,6 +112,22 @@ namespace RPGrunner
                                                                 (int)(playerDimensions.X * 1.5), (int)playerDimensions.Y));
             attackAnimation = new SpriteAnimation(2, attackSheet, secondaryStats.atkSpeed, new Rectangle((int)startLoc.X, (int)startLoc.Y,
                                                                 (int)playerDimensions.X, (int)playerDimensions.Y));
+        }
+        
+        public void UpdateAttack()
+        {
+            secondaryStats.attack = currentItem.CalculateNextAttack(primaryStats.strength,
+                primaryStats.intelligence, primaryStats.dexterity);
+        }
+
+        public void UpdateStats()
+        {
+            secondaryStats.maxHealth = 20 + (primaryStats.vitality + currentItem.vitality) * 10;
+            secondaryStats.health = secondaryStats.maxHealth;
+            secondaryStats.maxMana = 20 + (primaryStats.intelligence + currentItem.intelligence) * 10;
+            secondaryStats.mana = secondaryStats.maxMana;
+
+            secondaryStats.atkSpeed = currentItem.CalculateAtkSpd(primaryStats.dexterity);
         }
 
         public void LoadContent()
