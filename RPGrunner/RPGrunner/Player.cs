@@ -72,8 +72,13 @@ namespace RPGrunner
             primaryStats = new PStats();
             secondaryStats = new SStats();
 
-            secondaryStats.maxHealth = 500;
-            secondaryStats.health = 500;
+            primaryStats.vitality = 10;
+            primaryStats.strength = 10;
+            primaryStats.dexterity = 10;
+            primaryStats.intelligence = 10;
+
+            secondaryStats.maxHealth = 20 + primaryStats.vitality * 10;
+            secondaryStats.health = secondaryStats.maxHealth;
             secondaryStats.attack = 20;
             secondaryStats.atkSpeed = 1;
 
@@ -130,8 +135,7 @@ namespace RPGrunner
                 currentDepth--;
             }
 
-            startLoc.Y = (float)((float)(Game1.screenHeight / 1.33) + Game1.screenHeight * (currentDepth * .11)) - playerDimensions.Y / 2;
-            loc.Y = startLoc.Y;
+            armLoc.Y = loc.Y = startLoc.Y = (float)((float)(Game1.screenHeight / 1.33) + Game1.screenHeight * (currentDepth * .11)) - playerDimensions.Y / 2;
 
             walkAnimation.Update(gameTime, new Rectangle((int)startLoc.X, (int)startLoc.Y,
                                                                 (int)playerDimensions.X, (int)playerDimensions.Y));
@@ -165,7 +169,7 @@ namespace RPGrunner
             if (pState == PlayerState.walking)
             {
                 walkAnimation.Draw(spriteBatch);
-                armWalkAnimation.Draw(spriteBatch);
+                //armWalkAnimation.Draw(spriteBatch);
             }
 
             if (pState == PlayerState.attacking)
