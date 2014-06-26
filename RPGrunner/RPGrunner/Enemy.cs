@@ -55,8 +55,8 @@ namespace RPGrunner
             primaryStats = new PStats();
             secondaryStats = new SStats();
 
-            secondaryStats.maxHealth = 100;
-            secondaryStats.health = 100;
+            secondaryStats.maxHealth = 20;
+            secondaryStats.health = 20;
             secondaryStats.attack = 15;
             secondaryStats.atkSpeed = 2;
 

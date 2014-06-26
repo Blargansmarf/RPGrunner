@@ -108,7 +108,7 @@ namespace RPGrunner
 
             walkAnimation = new SpriteAnimation(8, walkSheet, .45, new Rectangle((int)startLoc.X, (int)startLoc.Y,
                                                                 (int)playerDimensions.X, (int)playerDimensions.Y));
-            armWalkAnimation = new SpriteAnimation(1, armWalkSheet, .3, new Rectangle((int)armLoc.X, (int)armLoc.Y,
+            armWalkAnimation = new SpriteAnimation(8, armWalkSheet, .45, new Rectangle((int)armLoc.X, (int)armLoc.Y,
                                                                 (int)(playerDimensions.X * 1.5), (int)playerDimensions.Y));
             attackAnimation = new SpriteAnimation(2, attackSheet, secondaryStats.atkSpeed, new Rectangle((int)startLoc.X, (int)startLoc.Y,
                                                                 (int)playerDimensions.X, (int)playerDimensions.Y));
@@ -133,7 +133,7 @@ namespace RPGrunner
         public void LoadContent()
         {
             walkSheet = content.Load<Texture2D>("Textures/HeroWalk");
-            armWalkSheet = content.Load<Texture2D>("Textures/HeroArmWalk(Base)");
+            armWalkSheet = content.Load<Texture2D>("Textures/HeroArmWalk");
             attackSheet = content.Load<Texture2D>("Textures/TestSpriteAttack");
             healthBarTexture = content.Load<Texture2D>("Textures/WhiteSquare");
         }
@@ -193,7 +193,7 @@ namespace RPGrunner
             if (pState == PlayerState.walking)
             {
                 walkAnimation.Draw(spriteBatch);
-                //armWalkAnimation.Draw(spriteBatch);
+                armWalkAnimation.Draw(spriteBatch);
             }
 
             if (pState == PlayerState.attacking)
