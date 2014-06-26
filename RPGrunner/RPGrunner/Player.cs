@@ -58,7 +58,10 @@ namespace RPGrunner
         {
             graphics = g;
             content = c;
-
+            
+            primaryStats = new PStats();
+            secondaryStats = new SStats();
+            
             Initialize();
         }
  
@@ -70,9 +73,6 @@ namespace RPGrunner
 
             currentDepth = 0;
             currentSpeed = Game1.screenWidth / 500;
-
-            primaryStats = new PStats();
-            secondaryStats = new SStats();
 
             primaryStats.vitality = 10;
             primaryStats.strength = 10;

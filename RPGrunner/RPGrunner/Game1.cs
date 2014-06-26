@@ -56,6 +56,7 @@ namespace RPGrunner
         int currentMenuChoice;
         int mainMenuMaxChoice;
         int pauseMenuMaxChoice;
+        int statMenuMaxChoice;
 
         Vector2 TitlePosition, StartEntryPosition, EntrySpacing;
 
@@ -119,6 +120,18 @@ namespace RPGrunner
             tempList.Add("Resume");
             tempList.Add("Main Menu");
             tempList.Add("Exit Game");
+
+            menus.Add(tempList);
+
+            tempList = new List<String>();
+
+            statMenuMaxChoice = 3;
+
+            tempList.Add("Primary Stats");
+            tempList.Add("<- Vitality ->");
+            tempList.Add("<- Strength ->");
+            tempList.Add("<- Dexterity ->");
+            tempList.Add("<- Intelligence ->");
 
             menus.Add(tempList);
 
