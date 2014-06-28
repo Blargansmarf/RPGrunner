@@ -58,7 +58,10 @@ namespace RPGrunner
         {
             graphics = g;
             content = c;
-
+            
+            primaryStats = new PStats();
+            secondaryStats = new SStats();
+            
             Initialize();
         }
  
