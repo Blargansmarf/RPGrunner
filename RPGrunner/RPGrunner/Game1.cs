@@ -122,8 +122,8 @@ namespace RPGrunner
 
             menus.Add(tempList);
 
-            TitlePosition = new Vector2(screenWidth * .45f, screenHeight * .33f);
-            StartEntryPosition = new Vector2(screenWidth * .45f, screenHeight * .5f);
+            TitlePosition = new Vector2(screenWidth * .5f, screenHeight * .33f);
+            StartEntryPosition = new Vector2(screenWidth * .5f, screenHeight * .5f);
             EntrySpacing = new Vector2(0, screenHeight * .075f);
         }
 
@@ -479,7 +479,8 @@ namespace RPGrunner
 
         private void DrawMenu(int x)
         {
-            spriteBatch.DrawString(titleFont, menus[x][0], TitlePosition, Color.Black);
+            spriteBatch.DrawString(titleFont, menus[x][0], TitlePosition
+                - new Vector2(titleFont.MeasureString(menus[x][0]).X / 2, 0), Color.Black);
 
             for (int i = 1; i < menus[x].Count; i++)
             {
@@ -490,7 +491,8 @@ namespace RPGrunner
                 else
                     textCol = Color.DarkGray;
 
-                spriteBatch.DrawString(menuEntryFont, menus[x][i], StartEntryPosition + EntrySpacing * (i - 1), textCol);
+                spriteBatch.DrawString(menuEntryFont, menus[x][i], StartEntryPosition + EntrySpacing * (i - 1)
+                    - new Vector2(menuEntryFont.MeasureString(menus[x][i]).X/2, 0), textCol);
             }
         }
     }

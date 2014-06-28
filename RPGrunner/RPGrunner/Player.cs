@@ -71,6 +71,12 @@ namespace RPGrunner
             currentDepth = 0;
             currentSpeed = Game1.screenWidth / 500;
 
+            playerDimensions = new Vector2(60, 90);
+
+            startLoc = new Vector2(Game1.screenWidth / 10, (float)(Game1.screenHeight / 1.33)) - playerDimensions / 2;
+            armLoc = startLoc;
+            armLoc.X -= playerDimensions.X / 2;
+
             primaryStats = new PStats();
             secondaryStats = new SStats();
 
@@ -84,19 +90,13 @@ namespace RPGrunner
             secondaryStats.maxMana = 20 + primaryStats.intelligence * 10;
             secondaryStats.mana = secondaryStats.maxMana;
 
-            currentItem = new Item(graphics, content, 0);
+            currentItem = new Item(graphics, content, 0, startLoc, playerDimensions);
 
             secondaryStats.attack = currentItem.CalculateNextAttack(primaryStats.strength,
                 primaryStats.intelligence, primaryStats.dexterity);
             secondaryStats.atkSpeed = currentItem.CalculateAtkSpd(primaryStats.dexterity);
 
             attackNum = 0;
-
-            playerDimensions = new Vector2(60, 90);
-
-            startLoc = new Vector2(Game1.screenWidth / 10, (float)(Game1.screenHeight / 1.33)) - playerDimensions/2;
-            armLoc = startLoc;
-            armLoc.X -= playerDimensions.X / 2;
 
             maxHealthBarLength = (int)Game1.screenWidth / 5;
 
@@ -161,6 +161,7 @@ namespace RPGrunner
 
             armLoc.Y = loc.Y = startLoc.Y = (float)((float)(Game1.screenHeight / 1.33) + Game1.screenHeight * (currentDepth * .11)) - playerDimensions.Y / 2;
 
+            currentItem.UpdateLoc(gameTime, startLoc.Y-playerDimensions.Y/3);
             walkAnimation.Update(gameTime, new Rectangle((int)startLoc.X, (int)startLoc.Y,
                                                                 (int)playerDimensions.X, (int)playerDimensions.Y));
             armWalkAnimation.Update(gameTime, new Rectangle((int)armLoc.X, (int)armLoc.Y,
@@ -193,6 +194,7 @@ namespace RPGrunner
             if (pState == PlayerState.walking)
             {
                 walkAnimation.Draw(spriteBatch);
+                currentItem.Draw(spriteBatch);
                 armWalkAnimation.Draw(spriteBatch);
             }
 
@@ -213,6 +215,7 @@ namespace RPGrunner
             walkAnimation.Reset();
             armWalkAnimation.Reset();
             attackAnimation.Reset();
+            currentItem.ResetAnimation();
         }
     }
 }

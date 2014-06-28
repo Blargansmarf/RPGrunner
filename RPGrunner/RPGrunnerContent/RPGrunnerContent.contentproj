@@ -99,13 +99,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Textures\Hero%28Base%29.png">
-      <Name>Hero%28Base%29</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Textures\HeroWalk.png">
       <Name>HeroWalk</Name>
       <Importer>TextureImporter</Importer>
@@ -115,6 +108,13 @@
   <ItemGroup>
     <Compile Include="Textures\HeroArmWalk.png">
       <Name>HeroArmWalk</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Textures\ShortSwordWalk.png">
+      <Name>ShortSwordWalk</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

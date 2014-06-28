@@ -16,6 +16,7 @@ namespace RPGrunner
         GraphicsDeviceManager graphics;
         ContentManager content;
 
+        SpriteAnimation animation;
         Texture2D itemSpriteSheet;
         Vector2 dimensions;
         Vector2 loc;
@@ -36,16 +37,19 @@ namespace RPGrunner
 
         Random random;
 
-        public Item(GraphicsDeviceManager g, ContentManager c, int weapon)
+        public Item(GraphicsDeviceManager g, ContentManager c, int weapon, Vector2 startLoc, Vector2 playerDim)
         {
             graphics = g;
             content = c;
+
+            dimensions = new Vector2(90, 120);
+            loc = new Vector2(startLoc.X - playerDim.X / 2, startLoc.Y - playerDim.Y / 3);
 
             random = new Random();
 
             if (weapon == 0)
             {
-                LoadContent("Sword");
+                LoadContent("Textures/ShortSwordWalk");
 
                 vitality = 0;
                 dexterity = 0;
@@ -63,11 +67,14 @@ namespace RPGrunner
 
                 atkSpd = 1f;
             }
+
+            animation = new SpriteAnimation(8, itemSpriteSheet, .45, new Rectangle((int)loc.X, (int)loc.Y,
+                                                                      (int)dimensions.X, (int)dimensions.Y));
         }
 
         private void LoadContent(string sSheet)
         {
-            //itemSpriteSheet = content.Load<Texture2D>(sSheet);
+            itemSpriteSheet = content.Load<Texture2D>(sSheet);
         }
 
         public float CalculateAtkSpd(int dex)
@@ -112,6 +119,22 @@ namespace RPGrunner
                 }
                 return atkDamage;
             }
+        }
+
+        public void UpdateLoc(GameTime gameTime, float yLoc)
+        {
+            animation.Update(gameTime, new Rectangle((int)loc.X, (int)yLoc, 
+                    (int)dimensions.X, (int)dimensions.Y));
+        }
+
+        public void ResetAnimation()
+        {
+            animation.Reset();
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            animation.Draw(spriteBatch);
         }
     }
 }
